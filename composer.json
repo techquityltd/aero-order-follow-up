@@ -1,0 +1,21 @@
+{
+    "name": "techquity/aero-order-follow-up",
+    "description": "",
+    "require": {
+        "php": "^7.2|^8.0",
+        "aerocommerce/core": "^0",
+        "aerocommerce/admin": "^1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Techquity\\AeroOrderFollowUp\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Techquity\\AeroOrderFollowUp\\ServiceProvider"
+            ]
+        }
+    }
+}
