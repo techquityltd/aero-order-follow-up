@@ -67,10 +67,6 @@ The module dispatches the following Aero events:
 - `FirstOrderFollowUpTriggered` → Used for the first follow-up email.
 - `SecondOrderFollowUpTriggered` → Used for the second follow-up email.
 
-## Support
-
-For issues or feature requests, contact Techquity support or open an issue on the repository.
-
 ---
 
 ✅ **Now your store can automatically follow up with customers and boost conversions!** 🚀
