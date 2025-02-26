@@ -7,7 +7,7 @@ use Aero\Cart\Models\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 
-class SecondOrderFollowUpTriggered extends ManagedEvent
+class SecondOrderFollowUpEvent extends ManagedEvent
 {
     use Queueable, SerializesModels;
 
