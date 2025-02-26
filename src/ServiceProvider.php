@@ -40,7 +40,7 @@ class ServiceProvider extends ModuleServiceProvider
         
             $group->string('second-email-item-skus-query')
                 ->default('-BOX')
-                ->hint('Defines part of the SKU to check before sending the second follow-up email. If an order containing an SKU that includes one of these values is found, the second email will not be sent. This is also a "LIKE" query, so it matches any SKU that **contains** these values. Use commas to separate multiple values.');
+                ->hint('Defines part of the SKU to check before sending the second follow-up email. If an order containing a SKU that includes one of these values is found, the second email will not be sent. This is also a "LIKE" query, so it matches any SKU that **contains** these values. Use commas to separate multiple values.');
         
             $group->integer('first-email-wait-time')
                 ->default(7)
@@ -48,7 +48,7 @@ class ServiceProvider extends ModuleServiceProvider
         
             $group->integer('second-email-wait-time')
                 ->default(21)
-                ->hint('Number of days after the order is placed before sending the second follow-up email. This email will only be sent if the first email was sent and the customer has not placed an order containing an SKU that matches the "second-email-item-skus-query".');
+                ->hint('Number of days after the order is placed before sending the second follow-up email. This email will only be sent if the first email was sent and the customer has not placed an order containing a SKU that matches the "second-email-item-skus-query".');
         
             $group->string('queue')
                 ->default('default')
