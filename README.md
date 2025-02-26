@@ -28,7 +28,7 @@ Go to **Aero Admin → Configuration → Mail Notifications**, then:
 
 1. **Create a new email notification for the first follow-up**
 
-   - **Event:** `Firs tOrder Follow Up`
+   - **Event:** `First Order Follow Up`
    - **Recipient:** `Customer`
    - **Template:** Customize the first follow-up email.
 
