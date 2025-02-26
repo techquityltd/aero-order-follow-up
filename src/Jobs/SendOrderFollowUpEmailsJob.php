@@ -8,11 +8,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
-use Techquity\AeroOrderFollowUp\Events\FirstOrderFollowUpTriggered;
-use Techquity\AeroOrderFollowUp\Events\OrderFollowUpTriggered;
-use Techquity\AeroOrderFollowUp\Events\SecondOrderFollowUpTriggered;
+use Techquity\AeroOrderFollowUp\Events\FirstOrderFollowUp;
+use Techquity\AeroOrderFollowUp\Events\SecondOrderFollowUp;
 
 class SendOrderFollowUpEmailsJob implements ShouldQueue
 {
@@ -51,8 +49,7 @@ class SendOrderFollowUpEmailsJob implements ShouldQueue
             }
 
             // Send the first follow-up email
-            event(new FirstOrderFollowUpTriggered ($order));
-            // Mail::to($order->email)->send(new \App\Mail\OrderFollowUpMail($order, 'first'));
+            event(new FirstOrderFollowUp ($order));
 
             // Store the first follow-up email timestamp
             $order->additional('first_follow_up_email', Carbon::now()->toDateTimeString());
@@ -93,9 +90,9 @@ class SendOrderFollowUpEmailsJob implements ShouldQueue
                 ->exists();
 
             if (!$hasOrderedBox) {
+
                 // Send the second follow-up email
-                event(new SecondOrderFollowUpTriggered($order));
-                // Mail::to($order->email)->send(new \App\Mail\OrderFollowUpMail($order, 'second'));
+                event(new SecondOrderFollowUp($order));
 
                 // Store the second follow-up email timestamp
                 $order->additional('second_follow_up_email', Carbon::now()->toDateTimeString());
