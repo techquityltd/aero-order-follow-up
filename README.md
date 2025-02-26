@@ -28,13 +28,13 @@ Go to **Aero Admin → Configuration → Mail Notifications**, then:
 
 1. **Create a new email notification for the first follow-up**
 
-   - **Event:** `FirstOrderFollowUpTriggered`
+   - **Event:** `FirstOrderFollowUp`
    - **Recipient:** `Customer`
    - **Template:** Customize the first follow-up email.
 
 2. **Create a new email notification for the second follow-up**
 
-   - **Event:** `SecondOrderFollowUpTriggered`
+   - **Event:** `SecondOrderFollowUp`
    - **Recipient:** `Customer`
    - **Template:** Customize the second follow-up email.
 
@@ -64,8 +64,8 @@ The module settings can be managed in **Aero Admin → Settings → Order Follow
 
 The module dispatches the following Aero events:
 
-- `FirstOrderFollowUpTriggered` → Used for the first follow-up email.
-- `SecondOrderFollowUpTriggered` → Used for the second follow-up email.
+- `FirstOrderFollowUp` → Used for the first follow-up email.
+- `SecondOrderFollowUp` → Used for the second follow-up email.
 
 ---
 
