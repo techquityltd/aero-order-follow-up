@@ -7,16 +7,16 @@ use Illuminate\Console\Scheduling\Schedule;
 use Aero\Common\Facades\Settings;
 use Aero\Common\Providers\ModuleServiceProvider;
 use Techquity\AeroOrderFollowUp\Console\Commands\SendOrderFollowUpEmails;
-use Techquity\AeroOrderFollowUp\Events\FirstOrderFollowUpEvent;
-use Techquity\AeroOrderFollowUp\Events\SecondOrderFollowUpEvent;
+use Techquity\AeroOrderFollowUp\Events\FirstOrderFollowUp;
+use Techquity\AeroOrderFollowUp\Events\SecondOrderFollowUp;
 
 class ServiceProvider extends ModuleServiceProvider
 {
     protected $listen = [
-        FirstOrderFollowUpEvent::class => [
+        FirstOrderFollowUp::class => [
             ManagedHandler::class,
         ],
-        SecondOrderFollowUpEvent::class => [
+        SecondOrderFollowUp::class => [
             ManagedHandler::class,
         ],
     ];
