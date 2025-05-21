@@ -30,21 +30,15 @@ class FirstOrderFollowUp extends ManagedEvent
 
     public function getParentProducts()
     {
-        $order = Order::find($this->order->id);
-        $parentSkus = [];
-
-        $sampleProducts = array_filter($order->items->toArray(), function($product) {
-            return str_contains($product['sku'], '-SAMPLE');
-        });
-
-        foreach ($sampleProducts as $product) {
-            $parentSkus[] = [
-                'sku' => str_replace('-SAMPLE', '', $product['sku']),
-            ];
-        }
-
-        return Product::whereIn('model', $parentSkus)->get();
-
+        $flaggedSkus = array_map('trim', explode(',', setting('order-follow-up.first-email-item-skus-query')));
+        return $this->order->items->filter(function ($item) use ($flaggedSkus) {
+            foreach ($flaggedSkus as $sku) {
+                if (str_contains($item->sku, $sku)) {
+                    return true;
+                }
+            }
+            return false;
+        })->values()->toArray();
     }
 
     public function getNotifiable()
