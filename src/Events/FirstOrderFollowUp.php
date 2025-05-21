@@ -20,6 +20,7 @@ class FirstOrderFollowUp extends ManagedEvent
 
     public $order;
     public $parentProducts;
+    public $storeUrl;
 
     public function __construct(Order $order)
     {
