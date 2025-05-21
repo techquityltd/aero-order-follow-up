@@ -8,7 +8,6 @@ use Illuminate\Bus\Queueable;
 use Aero\Catalog\Models\Variant;
 use Aero\Catalog\Models\Product;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\URL;
 
 class FirstOrderFollowUp extends ManagedEvent
 {
@@ -26,7 +25,7 @@ class FirstOrderFollowUp extends ManagedEvent
     {
         $this->order = $order;
         $this->parentProducts = $this->getParentProducts();
-        $this->storeUrl = URL::to('/');
+        $this->storeUrl = config('app.url');
     }
 
     public function getParentProducts()
