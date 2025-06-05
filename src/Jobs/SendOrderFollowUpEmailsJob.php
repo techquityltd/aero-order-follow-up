@@ -25,7 +25,9 @@ class SendOrderFollowUpEmailsJob implements ShouldQueue
         // STAGE 1: Send first follow-up emails (7 days ago)
         $this->sendFirstFollowUpEmails();
         // STAGE 2: Send second follow-up emails (21 days ago, only if first was sent)
-        $this->sendSecondFollowUpEmails();
+        if (setting('order-follow-up.send-second-email')) {
+            $this->sendSecondFollowUpEmails();
+        }
     }
 
     private function sendFirstFollowUpEmails()

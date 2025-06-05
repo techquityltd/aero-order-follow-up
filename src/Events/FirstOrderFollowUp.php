@@ -5,7 +5,6 @@ namespace Techquity\AeroOrderFollowUp\Events;
 use Aero\Events\ManagedEvent;
 use Aero\Cart\Models\Order;
 use Illuminate\Bus\Queueable;
-use Aero\Catalog\Models\Variant;
 use Aero\Catalog\Models\Product;
 use Illuminate\Queue\SerializesModels;
 

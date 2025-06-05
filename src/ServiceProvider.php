@@ -38,6 +38,9 @@ class ServiceProvider extends ModuleServiceProvider
                 ->default('-SAMPLE,-FULL')
                 ->hint('Defines part of the SKU to match when selecting orders for the first follow-up email. This is not a full SKU match but a "LIKE" query in the database, meaning it will match any SKU that **contains** one of these values. Use commas to separate multiple values (e.g., "-SAMPLE,-FULL").');
         
+            $group->boolean('send-second-email')
+                ->default(false);
+
             $group->string('second-email-item-skus-query')
                 ->default('-BOX')
                 ->hint('Defines part of the SKU to check before sending the second follow-up email. If an order containing a SKU that includes one of these values is found, the second email will not be sent. This is also a "LIKE" query, so it matches any SKU that **contains** these values. Use commas to separate multiple values.');
