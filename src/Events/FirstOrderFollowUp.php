@@ -31,6 +31,7 @@ class FirstOrderFollowUp extends ManagedEvent
     public function getParentProducts()
     {
         $flaggedSkus = array_map('trim', explode(',', setting('order-follow-up.first-email-item-skus-query')));
+        $secondEmailSuffixes = array_map('trim', explode(',', setting('order-follow-up.second-email-item-skus-query')));
 
         $sampleProducts = $this->order->items->filter(function ($item) use ($flaggedSkus) {
             foreach ($flaggedSkus as $suffix) {
@@ -41,13 +42,19 @@ class FirstOrderFollowUp extends ManagedEvent
             return false;
         });
 
-        $parentSkus = $sampleProducts->map(function ($item) use ($flaggedSkus) {
+        $parentSkus = $sampleProducts->flatMap(function ($item) use ($flaggedSkus, $secondEmailSuffixes) {
             foreach ($flaggedSkus as $suffix) {
                 if (str_ends_with($item->sku, $suffix)) {
-                    return str_replace($suffix, '', $item->sku);
+                    $baseSku = str_replace($suffix, '', $item->sku);
+        
+                    // Append each second-email suffix to the stripped SKU
+                    return collect($secondEmailSuffixes)->map(function ($secondSuffix) use ($baseSku) {
+                        return $baseSku . $secondSuffix;
+                    });
                 }
             }
-        })->filter()->unique()->values()->all();
+            return [];
+        })->unique()->values()->all();
 
         return Product::whereIn('model', $parentSkus)->get();
     }
