@@ -36,7 +36,8 @@ class SendOrderFollowUpEmailsJob implements ShouldQueue
         $skuQueries = explode(',', setting('order-follow-up.first-email-item-skus-query'));
         $dateCheck = Carbon::now()->subDays($waitDays);
 
-        $orders = Order::whereDate('created_at', $dateCheck)
+        $orders = Order::visible()
+            ->whereDate('ordered_at', $dateCheck)
             ->whereHas('items', function ($query) use ($skuQueries) {
                 foreach ($skuQueries as $sku) {
                     $query->orWhere('sku', 'LIKE', '%' . trim($sku));
@@ -67,7 +68,8 @@ class SendOrderFollowUpEmailsJob implements ShouldQueue
 
         $dateCheck = Carbon::now()->subDays($secondEmailWaitDays);
 
-        $orders = Order::whereDate('created_at', $dateCheck)
+        $orders = Order::visible()
+            ->whereDate('ordered_at', $dateCheck)
             ->whereHas('items', function ($query) use ($firstEmailSkus) {
                 foreach ($firstEmailSkus as $sku) {
                     $query->orWhere('sku', 'LIKE', '%' . trim($sku));
@@ -82,8 +84,9 @@ class SendOrderFollowUpEmailsJob implements ShouldQueue
             }
 
             // Check if an order containing second email SKUs has been placed
-            $hasOrderedBox = Order::where('email', $order->email)
-                ->where('created_at', '>', Carbon::now()->subDays($firstEmailWaitDays))
+            $hasOrderedBox = Order::visible()
+                ->where('email', $order->email)
+                ->where('ordered_at', '>', Carbon::now()->subDays($firstEmailWaitDays))
                 ->whereHas('items', function ($query) use ($secondEmailSkus) {
                     foreach ($secondEmailSkus as $sku) {
                         $query->orWhere('sku', 'LIKE', '%' . trim($sku));
