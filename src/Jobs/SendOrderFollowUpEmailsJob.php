@@ -33,16 +33,11 @@ class SendOrderFollowUpEmailsJob implements ShouldQueue
     private function sendFirstFollowUpEmails()
     {
         $waitDays = setting('order-follow-up.first-email-wait-time');
-        $skuQueries = explode(',', setting('order-follow-up.first-email-item-skus-query'));
+        $skuQueries = array_map('trim', explode(',', setting('order-follow-up.first-email-item-skus-query')));
         $dateCheck = Carbon::now()->subDays($waitDays);
 
         $orders = Order::visible()
             ->whereDate('ordered_at', $dateCheck)
-            ->whereHas('items', function ($query) use ($skuQueries) {
-                foreach ($skuQueries as $sku) {
-                    $query->orWhere('sku', 'LIKE', '%' . trim($sku));
-                }
-            })
             ->get();
 
         foreach ($orders as $order) {
@@ -51,8 +46,22 @@ class SendOrderFollowUpEmailsJob implements ShouldQueue
                 continue; // Skip if already sent
             }
 
+            // Only proceed if the order contains at least one of the SKUs
+            $hasSku = false;
+            foreach ($order->items as $item) {
+                foreach ($skuQueries as $sku) {
+                    if (stripos($item->sku, $sku) !== false) {
+                        $hasSku = true;
+                        break 2;
+                    }
+                }
+            }
+            if (!$hasSku) {
+                continue;
+            }
+
             // Send the first follow-up email
-            event(new FirstOrderFollowUp ($order));
+            event(new FirstOrderFollowUp($order));
 
             // Store the first follow-up email timestamp
             $order->additional('first_follow_up_email', Carbon::now()->toDateTimeString());
@@ -63,23 +72,31 @@ class SendOrderFollowUpEmailsJob implements ShouldQueue
     {
         $firstEmailWaitDays = setting('order-follow-up.first-email-wait-time');
         $secondEmailWaitDays = setting('order-follow-up.second-email-wait-time');
-        $firstEmailSkus = explode(',', setting('order-follow-up.first-email-item-skus-query'));
-        $secondEmailSkus = explode(',', setting('order-follow-up.second-email-item-skus-query'));
+        $firstEmailSkus = array_map('trim', explode(',', setting('order-follow-up.first-email-item-skus-query')));
+        $secondEmailSkus = array_map('trim', explode(',', setting('order-follow-up.second-email-item-skus-query')));
 
         $dateCheck = Carbon::now()->subDays($secondEmailWaitDays);
 
         $orders = Order::visible()
             ->whereDate('ordered_at', $dateCheck)
-            ->whereHas('items', function ($query) use ($firstEmailSkus) {
-                foreach ($firstEmailSkus as $sku) {
-                    $query->orWhere('sku', 'LIKE', '%' . trim($sku));
-                }
-            })
             ->get();
 
-        foreach ($orders as $order) {
-
+            foreach ($orders as $order) {
             if (!$order->additional('first_follow_up_email') || $order->additional('second_follow_up_email')) {
+                continue;
+            }
+
+            // Only proceed if the order contains at least one of the first email SKUs
+            $hasFirstSku = false;
+            foreach ($order->items as $item) {
+                foreach ($firstEmailSkus as $sku) {
+                    if (stripos($item->sku, $sku) !== false) {
+                        $hasFirstSku = true;
+                        break 2;
+                    }
+                }
+            }
+            if (!$hasFirstSku) {
                 continue;
             }
 
@@ -87,15 +104,20 @@ class SendOrderFollowUpEmailsJob implements ShouldQueue
             $hasOrderedBox = Order::visible()
                 ->where('email', $order->email)
                 ->where('ordered_at', '>', Carbon::now()->subDays($firstEmailWaitDays))
-                ->whereHas('items', function ($query) use ($secondEmailSkus) {
-                    foreach ($secondEmailSkus as $sku) {
-                        $query->orWhere('sku', 'LIKE', '%' . trim($sku));
+                ->get()
+                ->filter(function ($otherOrder) use ($secondEmailSkus) {
+                    foreach ($otherOrder->items as $item) {
+                        foreach ($secondEmailSkus as $sku) {
+                            if (stripos($item->sku, $sku) !== false) {
+                                return true;
+                            }
+                        }
                     }
+                    return false;
                 })
-                ->exists();
+                ->isNotEmpty();
 
             if (!$hasOrderedBox) {
-
                 // Send the second follow-up email
                 event(new SecondOrderFollowUp($order));
 
